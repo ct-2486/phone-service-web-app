@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>臺北市稅捐處 - 電話測試智慧應答雙模系統 (遠端JSON全題庫整合版)</title>
+    <title>臺北市稅捐處 - 電話測試智慧應答雙模系統 (GitHub 整合版)</title>
     <style>
         :root {
             --primary-color: #0b4a60;
@@ -89,7 +89,6 @@
 
         .catalog-grid {
             display: grid;
-            /* 運用 repeat(auto-fit) 根據解析度自動分配卡片數量 */
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
@@ -147,7 +146,6 @@
             background: var(--accent-color);
         }
 
-        /* 手機平板微調：當解析度小於 600px 時優化空間 */
         @media (max-width: 600px) {
             .catalog-grid {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -258,12 +256,12 @@
 <body>
 
 <div class="container" id="mainContainer">
-    <div id="loading" class="loading-screen">⏳ 正在連線下載串接最新官方 JSON 題庫，請稍候...</div>
+    <div id="loading" class="loading-screen">⏳ 正在載入並對接 GitHub 最新 JSON 題庫，請稍候...</div>
     
     <div id="appContent" style="display: none;">
         <div class="header">
             <h1>📞 臺北市稅捐處 ‧ 跨機關智慧應答雙模系統</h1>
-            <div style="font-size: 13px; color: #64748b; margin-top: 4px;">動態串接線上真實數據庫版 ‧ 各種解析度自適應圖像化介面</div>
+            <div style="font-size: 13px; color: #64748b; margin-top: 4px;">已成功部署於 GitHub ‧ 支援全解析度自適應動態面板</div>
         </div>
 
         <div class="mode-tabs">
@@ -325,99 +323,93 @@
 </div>
 
 <script>
-// 圖像化看板對應的 Icon 對應表
 const cateIcons = {
     "房屋稅": "🏠", "地價稅": "🗺️", "契稅": "📄", "土地增值稅": "📈",
     "使用牌照稅": "🚗", "娛樂稅": "🎟️", "印花稅": "✉️", "納保及行政救濟": "⚖️",
     "繳稅方式、電子繳款書及繳納證明": "💳", "延分期相關": "⏳", "稅務管理及其他": "🤝"
 };
 
-// 全域核心變數
 let taxBank = [];
 let categories = [];
 let currentDictCate = "";
 let currentQuizCate = "";
 let currentQuizObj = null;
 
-// 自動從 JSON 提取出最精準的核心關鍵字
-function extractKeywords(item) {
-    const rawText = item.title + " " + item.answer;
+// 基於題目與答案內容，自動抽取最核心的高頻考點關鍵字
+function extractKeywords(title, answer) {
+    const rawText = title + " " + answer;
     const kwSet = new Set();
     
-    // 定義法規高頻核心詞庫
     const targetKws = [
         "9月22日", "3月22日", "30日內", "40日", "10萬元", "2,674,200元", "2400cc", "11,230元", "3萬元以下", "1.2%", "2‰", "1%", "5%", "減價5%", "10年",
         "戶籍登記", "自用住宅", "全國單一自住", "公益出租人", "社會住宅", "包租代管", "低收入戶", "稅籍異動", "防詐騙", "免費申請", "延期或分期", "營業用",
-        "不加計利息", "便利商店", "滯納期", "不能跨縣市", "複查申請", "承攬契約", "營業稅", "選物販賣機", "查定課徵", "持分共有", "工廠房屋", "建築能效"
+        "不加計利息", "便利商店", "滯納期", "不能跨縣市", "複查申請", "承攬契約", "營業稅", "選物販賣機", "查定課徵", "持分共有", "工廠房屋", "建築能效",
+        "臨櫃文件與表單數位化", "房地稅額e化查詢平台"
     ];
     
     targetKws.forEach(kw => {
         if(rawText.includes(kw)) kwSet.add(kw);
     });
     
-    // 如果這題過於特殊無比對到，則預設撈取標題前四個字
-    if(kwSet.size === 0 && item.title) {
-        kwSet.add(item.title.substring(0, 5));
+    if(kwSet.size === 0 && title) {
+        kwSet.add(title.substring(0, 5));
     }
     return Array.from(kwSet);
 }
 
-// 🚀 核心：讀取載入 JSON 檔案
+// 🚀 關鍵對接修正：精準讀取您上傳的 JSON 結構欄位 ('title' 與 'answer')
 function loadTaxBankJson() {
-    // 預設與 HTML 放在同個目錄；如果在 GitHub，可替換為完整網址 'https://yourname.github.io/repo/tax_bank.json'
     fetch('./tax_bank.json')
         .then(response => {
-            if (!response.ok) {
-                throw new Error("找不到對應的 JSON 題庫檔案，請確認檔案位置。");
-            }
+            if (!response.ok) throw new Error("讀取 JSON 失敗。");
             return response.json();
         })
         .then(data => {
-            // 解析 JSON 資料格式
+            // 自動適應外層有 questions 或是直接為陣列的結構
             let rawList = data.questions || data;
             
-            // 補齊系統所需要的 keywords 與動態話務小叮嚀
             taxBank = rawList.map(item => {
-                let processedCate = item.category.trim().replace(/^[壹貳參肆伍陸柒捌玖拾拾壹、\s]+/, "");
-                let kws = extractKeywords(item);
+                // 讀取對接您實際的欄位：category, title, answer
+                let rawCate = item.category || "其他";
+                let processedCate = rawCate.trim().replace(/^[壹貳參肆伍陸柒捌玖拾拾壹、\s]+/, "");
                 
-                // 動態組裝專屬小叮嚀（如包含變革、特定金額或管道則自動增設宣導重點）
-                let generatedTips = "【話務小叮嚀】此題為本處核心業務宣導指標。答詢時請保持親切語氣，引導民眾多加利用線上e化平台或視訊雲申辦，以落實數位便民宗旨。";
-                if(item.title.includes("115年") || item.answer.includes("115年")) generatedTips = "【話務小叮嚀】結合115年最新稅基修正與能效優惠，為電話測試與各級考核極高頻必考亮點，切勿背誦舊制數字。";
-                if(item.answer.includes("戶籍")) generatedTips = "【話務小叮嚀】「辦竣戶籍登記」為此項租稅優惠的絕對法定要件，同仁接聽時應主動提醒民眾設籍規範，以免影響其權益。";
-                if(item.answer.includes("超商") || item.answer.includes("便利商店")) generatedTips = "【話務小叮嚀】注意考核門檻：「3萬元以下」且「逾期30天內」超商才可代收，超出限制需引導至金融機構。";
+                let qText = item.title || "";
+                let aText = item.answer || "";
+                
+                let kws = extractKeywords(qText, aText);
+                
+                let generatedTips = "【話務小叮嚀】此題為本處業務核心指標。答詢時請引導民眾多加利用線上e化平台申辦，落實便民宗旨。";
+                if(qText.includes("115年") || aText.includes("115年")) generatedTips = "【話務小叮嚀】結合115年最新稅基修正與能效優惠，為電話測試與考核極高頻必考亮點，切勿提供舊制數據。";
+                if(aText.includes("戶籍")) generatedTips = "【話務小叮嚀】「辦竣戶籍登記」為適用優惠的絕對法定要件，同仁接聽時應主動提醒民眾設籍規範。";
+                if(aText.includes("超商") || aText.includes("便利商店")) generatedTips = "【話務小叮嚀】注意考核標準：「3萬元以下」且「逾期30天內」超商才可代收，超出需至金融機構辦理。";
+                if(qText.includes("預約") || aText.includes("預約")) generatedTips = "【話務小叮嚀】貼心提醒同仁：每週三本處各分處取件時間特別延長至晚上7時30分，可多加對上班族宣導。";
 
                 return {
                     category: processedCate,
-                    q: item.title,
-                    a: item.answer,
+                    q: qText,
+                    a: aText,
                     keywords: kws,
                     tips: generatedTips
                 };
             });
 
-            // 抓取出所有不重複的業務類別
             categories = Array.from(new Set(taxBank.map(t => t.category)));
             
-            // 設定初始選擇的大類
             currentDictCate = categories[0] || "房屋稅";
             currentQuizCate = categories[0] || "房屋稅";
 
-            // 關閉 Loading，開啟主介面
             document.getElementById("loading").style.display = "none";
             document.getElementById("appContent").style.display = "block";
 
-            // 初始化看板與渲染
             buildCatalogDashboard();
             renderDict();
         })
         .catch(err => {
-            document.getElementById("loading").innerText = "❌ 題庫讀取失敗原因: " + err.message + "。請確認 tax_bank.json 檔案是否放置於正確位置並符合 UTF-8 編碼。";
+            document.getElementById("loading").innerText = "❌ 串接失敗。請確保 tax_bank.json 與 index.html 位於 GitHub 同一資料夾下。";
             console.error(err);
         });
 }
 
-// 1. 動態建立自適應 RWD 看板
 function buildCatalogDashboard() {
     const grid = document.getElementById("catalogGrid");
     grid.innerHTML = "";
@@ -448,12 +440,10 @@ function buildCatalogDashboard() {
     updateChips();
 }
 
-// 2. 更新下方快捷推薦搜尋標籤
 function updateChips() {
     const container = document.getElementById("chipsContainer");
     container.innerHTML = "";
     
-    // 自動從該大類的所有題目中取出前6個不重複的核心關鍵字作為快捷標籤
     let pool = taxBank.filter(t => t.category === currentDictCate);
     let allKws = [];
     pool.forEach(p => allKws = allKws.concat(p.keywords));
@@ -471,7 +461,6 @@ function updateChips() {
     });
 }
 
-// 3. 全功能精密跨欄位模糊檢索
 function renderDict() {
     const keyword = document.getElementById("dictSearch").value.trim().toLowerCase();
     const listContainer = document.getElementById("dictList");
@@ -527,7 +516,6 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// 4. 隨身小抄與盲測系統雙模切換
 function switchMode(mode) {
     document.getElementById("tabDict").classList.toggle("active", mode === 'dict');
     document.getElementById("tabQuiz").classList.toggle("active", mode === 'quiz');
@@ -543,7 +531,6 @@ function switchMode(mode) {
     }
 }
 
-// 5. 盲測盲練區機制
 function buildQuizCategoryButtons() {
     const quizGrid = document.getElementById("quizCateGrid");
     quizGrid.innerHTML = "";
@@ -611,7 +598,6 @@ function evaluateQuiz() {
         }
     });
 
-    // 答對超過半數的必備核心要件即判定為合格
     const passThreshold = Math.ceil(currentQuizObj.keywords.length / 2);
     const isPass = matchCount >= passThreshold;
     const resBox = document.getElementById("quizResultBox");
@@ -634,7 +620,6 @@ function evaluateQuiz() {
     resBox.scrollIntoView({ behavior: 'smooth' });
 }
 
-// 頁面加載時自動觸發 AJAX 下載 JSON
 window.onload = () => {
     loadTaxBankJson();
 };
