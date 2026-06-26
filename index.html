@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>臺北市稅捐處 - 電話測試智慧應答雙模系統 (精準官方全題庫檢索版)</title>
+    <title>臺北市稅捐處 - 電話測試智慧應答雙模系統 (遠端JSON全題庫整合版)</title>
     <style>
         :root {
             --primary-color: #0b4a60;
@@ -60,7 +60,7 @@
             text-align: center;
             cursor: pointer;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
             background: white;
             color: var(--primary-color);
             transition: all 0.2s;
@@ -79,19 +79,17 @@
             display: block;
         }
 
-        /* ======= 官方業務圖卡看板 ======= */
+        /* ======= 智慧響應式圖像化看板與網格調整 (RWD Layout) ======= */
         .catalog-title {
             font-size: 15px;
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .catalog-grid {
             display: grid;
+            /* 運用 repeat(auto-fit) 根據解析度自動分配卡片數量 */
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
@@ -101,7 +99,7 @@
             background: var(--board-bg);
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            padding: 16px 6px;
+            padding: 16px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.25s ease;
@@ -147,6 +145,16 @@
         }
         .catalog-card.active .badge-count {
             background: var(--accent-color);
+        }
+
+        /* 手機平板微調：當解析度小於 600px 時優化空間 */
+        @media (max-width: 600px) {
+            .catalog-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 8px;
+            }
+            .tab { font-size: 12px; padding: 10px 5px; }
+            .container { padding: 15px; }
         }
 
         /* 智慧搜尋區 */
@@ -198,7 +206,7 @@
             border-color: var(--accent-color);
         }
 
-        /* 題庫卡片美化 */
+        /* 題庫卡片樣式 */
         .dict-item {
             background: white;
             border: 1px solid #e2e8f0;
@@ -216,23 +224,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .dict-q { background: #fff7ed; padding: 12px; border-radius: 6px; border-left: 4px solid var(--accent-color); margin-bottom: 10px; font-weight: bold; font-size: 15px; color: #9a3412;}
-        .dict-a { background: #f0fdf4; padding: 12px; border-radius: 6px; border-left: 4px solid var(--success-color); line-height: 1.6; font-size: 14px; white-space: pre-line; color: #166534;}
+        .dict-a { background: #f0fdf4; padding: 12px; border-radius: 6px; border-left: 4px solid var(--success-color); line-height: 1.6; font-size: 14px; white-space: pre-wrap; color: #166534;}
         .dict-tips { background: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 12px; color: #64748b; margin-top: 8px; border-left: 4px solid #64748b;}
 
         .highlight { background-color: #fef08a; font-weight: bold; color: #b45309; padding: 0 2px; border-radius: 2px;}
-        .tag-cate { font-size: 11px; background: var(--secondary-color); color:white; padding: 3px 8px; border-radius: 12px;}
+        .tag-cate { font-size: 11px; background: var(--secondary-color); color:white; padding: 3px 8px; border-radius: 12px; white-space: nowrap;}
 
-        /* 盲測區 */
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; margin-top: 8px; }
+        /* 盲測訓練區網格 */
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; margin-top: 8px; }
         .quiz-card { background: #fafafa; border-left: 5px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 12px; }
-        textarea { width: 100%; height: 110px; padding: 12px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 15px; box-sizing: border-box; resize: vertical; }
+        textarea { width: 100%; height: 120px; padding: 12px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 15px; box-sizing: border-box; resize: vertical; }
         .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
         .btn:hover { background-color: var(--secondary-color); }
-        .btn-cate { background-color: #fff; color: #333; border: 1px solid #ccc; font-size: 12px; padding: 6px 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .btn-cate { background-color: #fff; color: #333; border: 1px solid #ccc; font-size: 12px; padding: 6px 4px; border-radius: 4px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .btn-cate.active { background-color: var(--secondary-color); color: white; border-color: var(--secondary-color); }
+        
         .result-box { padding: 15px; border-radius: 6px; margin-top: 15px; display: none;}
         .pass { background-color: #ebfffa; border: 2px solid var(--success-color); }
         .fail { background-color: #fff5f5; border: 2px solid var(--danger-color); }
@@ -240,215 +251,191 @@
         .kw-match { background-color: var(--success-color); }
         .kw-miss { background-color: var(--danger-color); }
 
+        .loading-screen { text-align: center; padding: 50px 20px; font-size: 18px; color: var(--primary-color); font-weight: bold; }
         .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #94a3b8; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>📞 臺北市稅捐處 ‧ 跨機關智慧應答雙模系統</h1>
-        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">依據電話測試官方題庫設計 ‧ 業務功能直覺看板介面</div>
-    </div>
+<div class="container" id="mainContainer">
+    <div id="loading" class="loading-screen">⏳ 正在連線下載串接最新官方 JSON 題庫，請稍候...</div>
+    
+    <div id="appContent" style="display: none;">
+        <div class="header">
+            <h1>📞 臺北市稅捐處 ‧ 跨機關智慧應答雙模系統</h1>
+            <div style="font-size: 13px; color: #64748b; margin-top: 4px;">動態串接線上真實數據庫版 ‧ 各種解析度自適應圖像化介面</div>
+        </div>
 
-    <div class="mode-tabs">
-        <div class="tab active" id="tabDict" onclick="switchMode('dict')">🖼️ 同仁線上速查隨身小抄 (全能關鍵字搜尋)</div>
-        <div class="tab" id="tabQuiz" onclick="switchMode('quiz')">🎯 應答盲測自我訓練 (AI評核點比對)</div>
-    </div>
+        <div class="mode-tabs">
+            <div class="tab active" id="tabDict" onclick="switchMode('dict')">🖼️ 同仁線上速查隨身小抄 (全能動態檢索)</div>
+            <div class="tab" id="tabQuiz" onclick="switchMode('quiz')">🎯 應答盲測自我訓練 (AI關鍵要件核對)</div>
+        </div>
 
-    <div id="sectionDict" class="mode-section active">
-        <div class="catalog-title">📂 請選擇業務類別（點選快速過戶看板）：</div>
-        <div class="catalog-grid" id="catalogGrid"></div>
+        <div id="sectionDict" class="mode-section active">
+            <div class="catalog-title">📂 請選擇業務大類（自適應圖像化看板）：</div>
+            <div class="catalog-grid" id="catalogGrid"></div>
 
-        <div class="search-section">
-            <input type="text" id="dictSearch" class="search-input" placeholder="🔍 輸入關鍵字全面動態檢索（可同時匹配題目、標準擬答、必備評核要件與話務小叮嚀）..." oninput="renderDict()">
+            <div class="search-section">
+                <input type="text" id="dictSearch" class="search-input" placeholder="🔍 輸入任何字詞全面動態檢索（自動比對題目、答覆、隱藏核心關鍵字與小叮嚀）..." oninput="renderDict()">
+                
+                <div class="sub-directory-chips" id="subDirectorySection">
+                    <span style="font-size:12px; color:#475569; font-weight:bold;">💡 當前推薦搜尋標籤：</span>
+                    <span id="chipsContainer"></span>
+                </div>
+            </div>
             
-            <div class="sub-directory-chips" id="subDirectorySection">
-                <span style="font-size:12px; color:#475569; font-weight:bold;">💡 本大類常用快速篩選標籤：</span>
-                <span id="chipsContainer"></span>
+            <div style="margin-bottom: 12px; font-size: 14px; color:#334155; font-weight: bold;" id="searchCount"></div>
+            <div id="dictList"></div>
+        </div>
+
+        <div id="sectionQuiz" class="mode-section">
+            <div class="filter-box" style="background:#eef2f7; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <strong>選擇考核範圍大類：</strong>
+                <div class="category-grid" id="quizCateGrid"></div>
+            </div>
+            
+            <div class="quiz-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="quizCateLabel" class="tag-cate" style="font-size:12px; padding: 4px 8px;"></span>
+                    <button class="btn" style="background:#57606f; padding:4px 10px; font-size:11px;" onclick="speakQuestion()">🔊 語音模擬來電</button>
+                </div>
+                <p id="quizQuestion" style="font-size: 15px; font-weight: bold; margin: 10px 0; line-height: 1.5; color:#111;"></p>
+            </div>
+
+            <textarea id="quizUserAns" placeholder="請在此輸入您的線上話務解說模擬回答（系統將自動交叉比對核心名詞、法規要件與辦理天數規定）..."></textarea>
+            
+            <div style="text-align: right; margin-top: 10px;">
+                <button class="btn" style="background:#747d8c; padding: 8px 12px;" onclick="showQuizHint()">💡 答題核心詞彙</button>
+                <button class="btn" style="background:var(--accent-color); padding: 8px 12px;" onclick="evaluateQuiz()">🚀 提交智能核對</button>
+            </div>
+
+            <div class="result-box" id="quizResultBox">
+                <h3 id="quizResultStatus" style="margin-top:0; font-size: 16px;"></h3>
+                <div style="margin-bottom:10px; font-size:13px;"><strong>要件核對分析：</strong> <span id="quizKwAnalysis"></span></div>
+                <div style="margin-bottom:10px;"><strong>📋 本處標準應答示範：</strong><div id="quizStandardRef" class="dict-a"></div></div>
+                <div><strong>👨‍🏫 話務宣導提示與小叮嚀：</strong><div id="quizTipsRef" class="dict-tips"></div></div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn" style="background-color:var(--secondary-color);" onclick="loadRandomQuiz()">🔄 挑戰下一題</button>
+                </div>
             </div>
         </div>
-        
-        <div style="margin-bottom: 12px; font-size: 14px; color:#334155; font-weight: bold;" id="searchCount"></div>
-        <div id="dictList"></div>
+
+        <div class="footer">臺北市政府稅捐稽徵處 ‧ 創新卓越精進專案 © 2026</div>
     </div>
-
-    <div id="sectionQuiz" class="mode-section">
-        <div class="filter-box" style="background:#eef2f7; padding:15px; border-radius:8px; margin-bottom:15px;">
-            <strong>選擇考核範圍：</strong>
-            <div class="category-grid" id="quizCateGrid"></div>
-        </div>
-        
-        <div class="quiz-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span id="quizCateLabel" class="tag-cate" style="font-size:12px; padding: 4px 8px;"></span>
-                <button class="btn" style="background:#57606f; padding:4px 10px; font-size:11px;" onclick="speakQuestion()">🔊 語音模擬來電</button>
-            </div>
-            <p id="quizQuestion" style="font-size: 15px; font-weight: bold; margin: 10px 0; line-height: 1.5; color:#111;"></p>
-        </div>
-
-        <textarea id="quizUserAns" placeholder="請在此輸入您的線上話務解說答覆（系統將自動核對核心關鍵字與法條要件）..."></textarea>
-        
-        <div style="text-align: right; margin-top: 10px;">
-            <button class="btn" style="background:#747d8c; padding: 8px 12px;" onclick="showQuizHint()">💡 答題核心詞彙</button>
-            <button class="btn" style="background:var(--accent-color); padding: 8px 12px;" onclick="evaluateQuiz()">🚀 提交智能核對</button>
-        </div>
-
-        <div class="result-box" id="quizResultBox">
-            <h3 id="quizResultStatus" style="margin-top:0; font-size: 16px;"></h3>
-            <div style="margin-bottom:10px; font-size:13px;"><strong>必備要件比對：</strong> <span id="quizKwAnalysis"></span></div>
-            <div style="margin-bottom:10px;"><strong>📋 本處標準應答示範：</strong><div id="quizStandardRef" class="dict-a"></div></div>
-            <div><strong>👨‍🏫 話務叮嚀與政策亮點：</strong><div id="quizTipsRef" class="dict-tips"></div></div>
-            <div style="text-align: center; margin-top: 15px;">
-                <button class="btn" style="background-color:var(--secondary-color);" onclick="loadRandomQuiz()">🔄 挑戰下一題</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">臺北市政府稅捐稽徵處 ‧ 創新卓越精進專案 © 2026</div>
 </div>
 
 <script>
-// 精準去編號後的官方看板大類結構
-const catalogConfig = [
-    { name: "房屋稅", icon: "🏠" },
-    { name: "地價稅", icon: "🗺️" },
-    { name: "契稅", icon: "📄" },
-    { name: "土地增值稅", icon: "📈" },
-    { name: "使用牌照稅", icon: "🚗" },
-    { name: "娛樂稅", icon: "🎟️" },
-    { name: "印花稅", icon: "✉️" },
-    { name: "納保及行政救濟", icon: "⚖️" },
-    { name: "繳稅方式、電子繳款書及繳納證明", icon: "💳" },
-    { name: "延分期相關", icon: "⏳" },
-    { name: "稅務管理及其他", icon: "🤝" }
-];
-
-// 全能題庫數據庫（正式包含所有題目、標準擬答、核心關鍵字與小叮嚀）
-const taxBank = [
-    {
-        category: "房屋稅",
-        q: "115年臺北市房屋稅基變革為何？",
-        keywords: ["不動產評價委員會", "建築能效標示", "地段率調整", "構造標準單價減價"],
-        a: "依本處公告115年兩大稅基新變革：\n1. 綠建築節能減稅：針對首次取得建築能效標示第1級、1+級或0級之房屋，給予房屋構造標準單價「減價5%」的優惠（限10年）。\n2. 地段率微調：依據各路段商業交通繁榮情形評定調整，影響路段總計60條。",
-        tips: "【話務小叮嚀】結合ESG政策，全台首創將『建築能效』融入稅基折減，為本處創新與電話抽測必考宣導亮點。"
-    },
-    {
-        category: "房屋稅",
-        q: "家戶持有全國單一且自住並設立戶籍的本市房屋，115年期稅基折減比率與現值門檻為何？",
-        keywords: ["全國單一自住", "折減20%", "2,674,200元", "實質稅率0.8%"],
-        a: "本市全國單一自住高價住宅排除門檻與折減政策調整如下：\n1. 115年期房屋稅基折減比率已改為「折減20%」（換算實質稅率約為0.8%）。\n2. 適用之房屋現值一定金額門檻經評定為「新臺幣2,674,200元以下」者始符合資格。",
-        tips: "【話務小叮嚀】配合中央2.0逐年緩步恢復機制，請務必精準回覆115年期對應數字2,674,200元，高於此現值則不適用折減。"
-    },
-    {
-        category: "地價稅",
-        q: "新買或繼承的房屋作自用住宅，逾9月22日申請期限，有無當年度適用的補救辦法？",
-        keywords: ["9月22日", "土地增值稅", "契稅申報", "先行勾選", "補送文件"],
-        a: "依規定特別稅率申請需於9月22日前提出，逾期原則自次年起適用。\n【補救機制】：若所有權人在先前辦理移轉申報「契稅」或「土地增值稅」時，已於申報書上「先行勾選提出申請」自用住宅用地稅率者，只要該土地在當年9月22日前符合自用要件，此時只需「趕快補送戶籍及建物相關證明文件」，當年度仍可按2‰優惠稅率課徵！",
-        tips: "【話務小叮嚀】同仁接聽時應主動協助查詢原申報書勾選狀態，這是非常貼心的主動便民服務，常為民眾爭取到當年度即時減免。"
-    },
-    {
-        category: "契稅",
-        q: "配偶之間相互贈與房屋，是否需要申報繳納契稅？",
-        keywords: ["配偶相互贈與", "不課徵土地增值稅", "仍應申報繳納契稅", "契約成立之日起30日內"],
-        a: "是的，仍應申報繳納契稅。\n配偶間相互贈與土地可以申請不課徵土地增值稅，但「房屋」贈與並無免除契稅之規定。因此，仍應於贈與契約成立之日起30日內，向房屋所在地之稅捐稽徵機關申報繳納契稅。",
-        tips: "【話務小叮嚀】常有民眾將土地與房屋混為一談，誤以為土地免稅房屋就免稅，應特別提醒土增稅與契稅在法規上的本質差異。"
-    },
-    {
-        category: "土地增值稅",
-        q: "繼承外縣市房屋和土地，可否至臺北市稅捐稽徵處辦理地方稅查欠手續？",
-        keywords: ["繼承登記", "地方稅查欠", "不能跨縣市代辦", "房地所在地"],
-        a: "不可以。辦理房地繼承、移轉登記前的「查欠」手續，依法必須由土地或房屋「所在地」的稅捐稽徵機關辦理戳印。因非屬本處管轄，必須請民眾向外縣市地方稅稽徵機關辦理，或多利用網路申報系統進行線上查欠。",
-        tips: "【話務小叮嚀】明確釐清管轄權限，告知民眾跨縣市無法由本處臨櫃直接代辦查欠戳記，引導其使用內政部線上查欠系統可免去奔波。"
-    },
-    {
-        category: "使用牌照稅",
-        q: "申請身心障礙免徵牌照稅，有 cc 數或免稅金額上限嗎？",
-        keywords: ["身心障礙", "同一戶籍二親等", "2400cc", "11,230元"],
-        a: "1. 車主資格：身障者無駕照時，可使用配偶或「同一戶籍二親等內親屬」之車輛申請免徵（每位身障者限一輛）。\n2. 免稅上限：以「2400cc」自用小客車稅額「新臺幣11,230元」為上限。超過11,230元之部分仍須補繳差額稅款。",
-        tips: "【話務小叮嚀】非配偶之親屬車輛必須限制在「同一戶籍」下，核心考核數字 2400cc 與 11,230 元請務必熟記。"
-    },
-    {
-        category: "娛樂稅",
-        q: "選物販賣機（娃娃機）應如何課徵娛樂稅？",
-        keywords: ["選物販賣機", "娛樂稅", "查定課徵", "主動辦理登記"],
-        a: "選物販賣機（娃娃機）屬於娛樂稅法規定的娛樂設施，應依規定課徵娛樂稅。本處通常採用「查定課徵」方式，由稅務人員依據機台數量、營業地點及營業狀況評定稅額，並按月寄發稅單。營業人應於開業前向本處辦理登記及代徵報繳手續。",
-        tips: "【話務小叮嚀】本處題庫此類僅此一題。屬於實體查定課徵範疇，提醒台主勿私自擺放，應主動向本處辦理登記以防受罰。"
-    },
-    {
-        category: "印花稅",
-        q: "承攬契約中包含營業稅，應如何計繳印花稅？",
-        keywords: ["承攬契約", "合約總價", "營業稅額分開載明", "扣除營業稅"],
-        a: "印花稅係依契約金額千分之一計貼。若承攬契約內明確將「合約金額」與「加值型營業稅額」分開載明，例如總價105萬元（內含合約金額100萬元、營業稅5萬元），則可以「扣除營業稅」後之金額（即100萬元）作為印花稅之計稅貼印依據。若未分開載明，則需以合約總價（105萬）計貼。",
-        tips: "【話務小叮嚀】主動教導民眾合法的節稅小撇步：只要在寫合約時分開載明營業稅，就能省下營業稅部分的印花稅。"
-    },
-    {
-        category: "納保及行政救濟",
-        q: "不服稅捐處核定的稅額，應該在什麼期限內提出復查申請？",
-        keywords: ["復查申請", "繳款書送達", "繳納期間屆滿次日起", "30日內"],
-        a: "民眾若對本處核定之稅額不服，應依下列規定期限申請復查：\n1. 有應納稅額者：應於繳款書送達後，於「繳納期間屆滿次日起30日內」提出復查申請。\n2. 無應納稅額者：應於核定通知書送達次日起30日內提出申請。",
-        tips: "【話務小叮嚀】行政救濟的「30日」法定起算點極其關鍵（有稅額者是繳納期間屆滿次日），電話應答時切勿口誤，以免影響民眾權益。"
-    },
-    {
-        category: "繳稅方式、電子繳款書及繳納證明",
-        q: "過了繳納期限之逾期稅單，便利商店（超商）還可以代收繳納嗎？有何限制？",
-        keywords: ["過了繳納期限", "滯納期30日內", "便利商店代收", "自動計算滯納金", "3萬元以下"],
-        a: "可以。只要在「開徵期滿後30日內」（即滯納期內）且每張稅單應納金額在「新臺幣3萬元以下」的逾期稅單，均可直接前往四大超商繳納。超商條碼系統會依每逾3日加徵1%滯納金「自動計算總額」完成扣繳，免去民眾跑銀行排隊的麻煩。",
-        tips: "【話務小叮嚀】電話測試高頻題！特別叮嚀民眾：滯納期30天內且3萬元以下超商才能收；若超過30天，就只能乖乖到金融機構辦理。"
-    },
-    {
-        category: "延分期相關",
-        q: "因天災事變或經濟弱勢無法如期繳納地方稅，可否申請延期或分期繳納？",
-        keywords: ["延期或分期繳納", "天災事變", "經濟弱勢", "不加計利息"],
-        a: "可以。納稅義務人因天災、事變、不可抗力之事由，或屬於低收入戶等經濟弱勢者，不能於法定期間內繳清稅款時，得於規定納稅期間內，檢具證明文件向本處申請延期或分期繳納。核准延期或分期者，依法「不加計利息」。",
-        tips: "【話務小叮嚀】本項對應本市專屬分期辦法，強調對於天災及特定社會弱勢群體，分期具有特殊的「免息」配套關懷政策。"
-    },
-    {
-        category: "稅務管理及其他",
-        q: "什麼是「稅籍異動即時通」服務？民眾要如何申請？",
-        keywords: ["稅籍異動即時通", "防詐騙機制", "簡訊或電子郵件通知", "免費申請"],
-        a: "1. 服務功能：這是本處推出的有感防詐便民機制。當民眾本市的房屋或土地產權發生變更登記、或申報契稅/土增稅時，系統會第一時間自動發送「簡訊或電子郵件通知」給所有權人，防止不動產遭冒名移轉變賣。\n2. 申請方式：民眾可憑自然人憑證等至本處網站線上申請，或臨櫃填寫申請書，此項安全防護服務完全「免費」。",
-        tips: "【話務小叮嚀】重要亮點政績宣導！此為財產產權主動防詐工具，回答時若能引導民眾免費申辦，將大幅提升整體服務滿意度評分。"
-    }
-];
-
-// 各大類快速篩選標籤庫（隨點即搜）
-const folderChips = {
-    "房屋稅": ["不動產評價委員會", "建築能效標示", "全國單一自住", "2,674,200", "折減20%"],
-    "地價稅": ["9月22日", "自用住宅用地", "千分之2", "補送文件"],
-    "契稅": ["配偶相互贈與", "仍應申報繳納契稅", "30日內"],
-    "土地增值稅": ["不能跨縣市代辦", "房地所在地", "繼承登記"],
-    "使用牌照稅": ["身心障礙", "同一戶籍二親等", "2400cc", "11,230元"],
-    "娛樂稅": ["選物販賣機", "查定課徵", "主動辦理登記"],
-    "印花稅": ["承攬契約", "合約總價", "營業稅額分開載明", "扣除營業稅"],
-    "納保及行政救濟": ["復查申請", "繳納期間屆滿次日起", "30日內"],
-    "繳稅方式、電子繳款書及繳納證明": ["過了繳納期限", "滯納期30日內", "便利商店代收", "3萬元以下"],
-    "延分期相關": ["延期或分期繳納", "天災事變", "經濟弱勢", "不加計利息"],
-    "稅務管理及其他": ["稅籍異動即時通", "防詐騙機制", "免費申請", "簡訊或電子郵件通知"]
+// 圖像化看板對應的 Icon 對應表
+const cateIcons = {
+    "房屋稅": "🏠", "地價稅": "🗺️", "契稅": "📄", "土地增值稅": "📈",
+    "使用牌照稅": "🚗", "娛樂稅": "🎟️", "印花稅": "✉️", "納保及行政救濟": "⚖️",
+    "繳稅方式、電子繳款書及繳納證明": "💳", "延分期相關": "⏳", "稅務管理及其他": "🤝"
 };
 
-let currentDictCate = "房屋稅";
-let currentQuizCate = "房屋稅";
+// 全域核心變數
+let taxBank = [];
+let categories = [];
+let currentDictCate = "";
+let currentQuizCate = "";
 let currentQuizObj = null;
 
-// 1. 建立去編號的官方大類圖卡看板
+// 自動從 JSON 提取出最精準的核心關鍵字
+function extractKeywords(item) {
+    const rawText = item.title + " " + item.answer;
+    const kwSet = new Set();
+    
+    // 定義法規高頻核心詞庫
+    const targetKws = [
+        "9月22日", "3月22日", "30日內", "40日", "10萬元", "2,674,200元", "2400cc", "11,230元", "3萬元以下", "1.2%", "2‰", "1%", "5%", "減價5%", "10年",
+        "戶籍登記", "自用住宅", "全國單一自住", "公益出租人", "社會住宅", "包租代管", "低收入戶", "稅籍異動", "防詐騙", "免費申請", "延期或分期", "營業用",
+        "不加計利息", "便利商店", "滯納期", "不能跨縣市", "複查申請", "承攬契約", "營業稅", "選物販賣機", "查定課徵", "持分共有", "工廠房屋", "建築能效"
+    ];
+    
+    targetKws.forEach(kw => {
+        if(rawText.includes(kw)) kwSet.add(kw);
+    });
+    
+    // 如果這題過於特殊無比對到，則預設撈取標題前四個字
+    if(kwSet.size === 0 && item.title) {
+        kwSet.add(item.title.substring(0, 5));
+    }
+    return Array.from(kwSet);
+}
+
+// 🚀 核心：讀取載入 JSON 檔案
+function loadTaxBankJson() {
+    // 預設與 HTML 放在同個目錄；如果在 GitHub，可替換為完整網址 'https://yourname.github.io/repo/tax_bank.json'
+    fetch('./tax_bank.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("找不到對應的 JSON 題庫檔案，請確認檔案位置。");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 解析 JSON 資料格式
+            let rawList = data.questions || data;
+            
+            // 補齊系統所需要的 keywords 與動態話務小叮嚀
+            taxBank = rawList.map(item => {
+                let processedCate = item.category.trim().replace(/^[壹貳參肆伍陸柒捌玖拾拾壹、\s]+/, "");
+                let kws = extractKeywords(item);
+                
+                // 動態組裝專屬小叮嚀（如包含變革、特定金額或管道則自動增設宣導重點）
+                let generatedTips = "【話務小叮嚀】此題為本處核心業務宣導指標。答詢時請保持親切語氣，引導民眾多加利用線上e化平台或視訊雲申辦，以落實數位便民宗旨。";
+                if(item.title.includes("115年") || item.answer.includes("115年")) generatedTips = "【話務小叮嚀】結合115年最新稅基修正與能效優惠，為電話測試與各級考核極高頻必考亮點，切勿背誦舊制數字。";
+                if(item.answer.includes("戶籍")) generatedTips = "【話務小叮嚀】「辦竣戶籍登記」為此項租稅優惠的絕對法定要件，同仁接聽時應主動提醒民眾設籍規範，以免影響其權益。";
+                if(item.answer.includes("超商") || item.answer.includes("便利商店")) generatedTips = "【話務小叮嚀】注意考核門檻：「3萬元以下」且「逾期30天內」超商才可代收，超出限制需引導至金融機構。";
+
+                return {
+                    category: processedCate,
+                    q: item.title,
+                    a: item.answer,
+                    keywords: kws,
+                    tips: generatedTips
+                };
+            });
+
+            // 抓取出所有不重複的業務類別
+            categories = Array.from(new Set(taxBank.map(t => t.category)));
+            
+            // 設定初始選擇的大類
+            currentDictCate = categories[0] || "房屋稅";
+            currentQuizCate = categories[0] || "房屋稅";
+
+            // 關閉 Loading，開啟主介面
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("appContent").style.display = "block";
+
+            // 初始化看板與渲染
+            buildCatalogDashboard();
+            renderDict();
+        })
+        .catch(err => {
+            document.getElementById("loading").innerText = "❌ 題庫讀取失敗原因: " + err.message + "。請確認 tax_bank.json 檔案是否放置於正確位置並符合 UTF-8 編碼。";
+            console.error(err);
+        });
+}
+
+// 1. 動態建立自適應 RWD 看板
 function buildCatalogDashboard() {
     const grid = document.getElementById("catalogGrid");
     grid.innerHTML = "";
 
-    catalogConfig.forEach(item => {
-        let count = taxBank.filter(t => t.category === item.name).length;
+    categories.forEach(cateName => {
+        let count = taxBank.filter(t => t.category === cateName).length;
+        let icon = cateIcons[cateName] || "📁";
 
         const card = document.createElement("div");
-        card.className = `catalog-card ${item.name === currentDictCate ? 'active' : ''}`;
+        card.className = `catalog-card ${cateName === currentDictCate ? 'active' : ''}`;
         card.innerHTML = `
             <span class="badge-count">${count} 題</span>
-            <span class="icon-wrapper">${item.icon}</span>
-            <span class="title-text">${item.name}</span>
+            <span class="icon-wrapper">${icon}</span>
+            <span class="title-text">${cateName}</span>
         `;
         
         card.onclick = () => {
-            currentDictCate = item.name;
+            currentDictCate = cateName;
             document.querySelectorAll(".catalog-card").forEach(c => c.classList.remove("active"));
             card.classList.add("active");
             
@@ -461,13 +448,18 @@ function buildCatalogDashboard() {
     updateChips();
 }
 
-// 2. 標籤聯動更新
+// 2. 更新下方快捷推薦搜尋標籤
 function updateChips() {
     const container = document.getElementById("chipsContainer");
     container.innerHTML = "";
     
-    const chips = folderChips[currentDictCate] || [];
-    chips.forEach(chip => {
+    // 自動從該大類的所有題目中取出前6個不重複的核心關鍵字作為快捷標籤
+    let pool = taxBank.filter(t => t.category === currentDictCate);
+    let allKws = [];
+    pool.forEach(p => allKws = allKws.concat(p.keywords));
+    let uniqueKws = Array.from(new Set(allKws)).slice(0, 6);
+
+    uniqueKws.forEach(chip => {
         const span = document.createElement("span");
         span.className = "hot-tag";
         span.innerText = `# ${chip}`;
@@ -479,16 +471,14 @@ function updateChips() {
     });
 }
 
-// 3. 全方位題庫精密全檢索（支援匹配題目、答覆、要件、小叮嚀）
+// 3. 全功能精密跨欄位模糊檢索
 function renderDict() {
     const keyword = document.getElementById("dictSearch").value.trim().toLowerCase();
     const listContainer = document.getElementById("dictList");
     listContainer.innerHTML = "";
 
-    // 篩選當前大類
     let filtered = taxBank.filter(item => item.category === currentDictCate);
 
-    // 如果輸入了關鍵字，進行全能跨欄位檢索
     if (keyword) {
         filtered = filtered.filter(item => 
             item.q.toLowerCase().includes(keyword) || 
@@ -498,14 +488,13 @@ function renderDict() {
         );
     }
 
-    document.getElementById("searchCount").innerText = `📊 當前大類 [${currentDictCate}] 篩選結果：共找到 ${filtered.length} 筆測試題型`;
+    document.getElementById("searchCount").innerText = `📊 當前類別 [${currentDictCate}] 下：共找到 ${filtered.length} 筆配對題型`;
 
     if(filtered.length === 0) {
-        listContainer.innerHTML = "<div style='text-align:center; padding:35px; color:#94a3b8; font-size:14px;'>❌ 未找到符合該搜尋條件的數據，請清空搜尋框或點選其他快捷標籤。</div>";
+        listContainer.innerHTML = "<div style='text-align:center; padding:35px; color:#94a3b8; font-size:14px;'>❌ 沒有找到符合搜尋條件的答案，請試試清理搜尋框或換別的標籤。</div>";
         return;
     }
 
-    // 渲染卡片並動態高亮匹配文字
     filtered.forEach(item => {
         const itemEl = document.createElement("div");
         itemEl.className = "dict-item";
@@ -523,11 +512,11 @@ function renderDict() {
 
         itemEl.innerHTML = `
             <div class="dict-title">
-                <span>🔑 官方評核要件：${item.keywords.map(k => `#${k}`).join(" ")}</span>
+                <span>🔑 官方動態評核點：${item.keywords.map(k => `#${k}`).join(" ")}</span>
                 <span class="tag-cate">${item.category}</span>
             </div>
-            <div class="dict-q">🙋 電話測試問：${questionTxt}</div>
-            <div class="dict-a">📢 處內標準答覆：\n${answerTxt}</div>
+            <div class="dict-q">🙋 電話測試問題：${questionTxt}</div>
+            <div class="dict-a">📢 處內標準答覆指引：\n${answerTxt}</div>
             <div class="dict-tips">${tipsTxt}</div>
         `;
         listContainer.appendChild(itemEl);
@@ -538,7 +527,7 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// 4. 雙模式切換
+// 4. 隨身小抄與盲測系統雙模切換
 function switchMode(mode) {
     document.getElementById("tabDict").classList.toggle("active", mode === 'dict');
     document.getElementById("tabQuiz").classList.toggle("active", mode === 'quiz');
@@ -554,17 +543,17 @@ function switchMode(mode) {
     }
 }
 
-// 5. 考核區按鈕建立
+// 5. 盲測盲練區機制
 function buildQuizCategoryButtons() {
     const quizGrid = document.getElementById("quizCateGrid");
     quizGrid.innerHTML = "";
-    catalogConfig.forEach(cate => {
+    categories.forEach(cateName => {
         const btnQ = document.createElement("button");
-        btnQ.className = `btn btn-cate ${cate.name === currentQuizCate ? 'active' : ''}`;
-        btnQ.innerText = cate.name;
-        btnQ.title = cate.name;
+        btnQ.className = `btn btn-cate ${cateName === currentQuizCate ? 'active' : ''}`;
+        btnQ.innerText = cateName;
+        btnQ.title = cateName;
         btnQ.onclick = () => {
-            currentQuizCate = cate.name;
+            currentQuizCate = cateName;
             document.querySelectorAll("#quizCateGrid .btn-cate").forEach(b => b.classList.remove("active"));
             btnQ.classList.add("active");
             loadRandomQuiz();
@@ -579,7 +568,7 @@ function loadRandomQuiz() {
     
     let pool = taxBank.filter(q => q.category === currentQuizCate);
     if(pool.length === 0) {
-        document.getElementById("quizQuestion").innerText = "💡 該業務大類目前展示數據庫中無考核題目，請點選上方其他分類進行測試。";
+        document.getElementById("quizQuestion").innerText = "💡 該大類目前無考核題目，請點選其他大類進行盲測切換。";
         return;
     }
     
@@ -596,18 +585,18 @@ function speakQuestion() {
         utterance.rate = 0.95;
         window.speechSynthesis.speak(utterance);
     } else {
-        alert("網頁瀏覽器不支援語音合成功能。");
+        alert("瀏覽器不支援語音合成合成播放功能。");
     }
 }
 
 function showQuizHint() {
     if(!currentQuizObj) return;
-    alert(`💡 答題核心詞彙（官方核對點）：\n【${currentQuizObj.keywords.join("、")}】`);
+    alert(`💡 答題核心詞彙（本處評核必備核心點）：\n【${currentQuizObj.keywords.join("、")}】`);
 }
 
 function evaluateQuiz() {
     const userAns = document.getElementById("quizUserAns").value.trim();
-    if(!userAns) { alert("請先輸入您的模擬話務解說答覆！"); return; }
+    if(!userAns) { alert("請先輸入您的模擬電話應答口述解說內容！"); return; }
     if(!currentQuizObj) return;
 
     let matchCount = 0;
@@ -622,17 +611,18 @@ function evaluateQuiz() {
         }
     });
 
+    // 答對超過半數的必備核心要件即判定為合格
     const passThreshold = Math.ceil(currentQuizObj.keywords.length / 2);
     const isPass = matchCount >= passThreshold;
     const resBox = document.getElementById("quizResultBox");
 
     if(isPass) {
         resBox.className = "result-box pass";
-        document.getElementById("quizResultStatus").innerHTML = `🎉 評核結果：合格！成功命中 ${matchCount}/${currentQuizObj.keywords.length} 個官方必備要件`;
+        document.getElementById("quizResultStatus").innerHTML = `🎉 評核結果：【合格】 順利命中 ${matchCount}/${currentQuizObj.keywords.length} 個本處官方核心要件！`;
         document.getElementById("quizResultStatus").style.color = "var(--success-color)";
     } else {
         resBox.className = "result-box fail";
-        document.getElementById("quizResultStatus").innerHTML = `⚠️ 評核結果：未達標準！僅命中 ${matchCount}/${currentQuizObj.keywords.length} 個關鍵詞`;
+        document.getElementById("quizResultStatus").innerHTML = `⚠️ 評核結果：【未達標準】 僅命中 ${matchCount}/${currentQuizObj.keywords.length} 個關鍵核心詞，請對照下方標準答案加強記憶。`;
         document.getElementById("quizResultStatus").style.color = "var(--danger-color)";
     }
 
@@ -644,9 +634,9 @@ function evaluateQuiz() {
     resBox.scrollIntoView({ behavior: 'smooth' });
 }
 
+// 頁面加載時自動觸發 AJAX 下載 JSON
 window.onload = () => {
-    buildCatalogDashboard();
-    renderDict();
+    loadTaxBankJson();
 };
 </script>
 
